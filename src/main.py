@@ -1,35 +1,27 @@
 from multiprocessing import Process
 import Toolbox
-import ConfigParser
 import subprocess
 import time
 
 
-configParser = ConfigParser.RawConfigParser()
-configFilePath = r'../config.txt'
-configParser.read(configFilePath)
-messenger = configParser.get('System', 'MESSENGER')
-pitch = int(configParser.get('Modulator', 'PITCH'))
-
-
 def init():
-    Toolbox.checkDataDir()
+    messenger, pitch, srcDir = Toolbox.config()
     selfID = Toolbox.loadNull("self")
     Toolbox.callMessenger(messenger, "self")
-    return selfID
+    return selfID, pitch, srcDir
 
 
 def terminate(selfID):
     Toolbox.unloadNull(selfID)
 
 
-def Main(who, pitch):
-    subprocess.Popen(str("x-terminal-emulator -e 'python ./Modulator.py " +
-                         "-w {} -p {}'".format(who, pitch)),
+def Main(who, pitch, srcParentDir):
+    subprocess.Popen(str("x-terminal-emulator -e 'python {}/Modulator.py " +
+                         "-w {} -p {}'").format(srcDir, who, pitch),
                      shell=True).communicate()
 
 if __name__ == '__main__':
-    selfID = init()
+    selfID, pitch, srcDir = init()
     start = None
     while start not in ["y", "n"]:
         start = str(raw_input("Enter 'y' to start, enter 'n' to terminate: "))
@@ -38,7 +30,7 @@ if __name__ == '__main__':
             raise SystemExit
     try:
         selfProcess = Process(target=Main,
-                            args=("self", pitch,))
+                              args=("self", pitch, srcDir))
         selfProcess.start()
         while selfProcess.is_alive():
             time.sleep(1)

@@ -1,21 +1,17 @@
-import time
+import ConfigParser
 import os
 import subprocess
 
 
-def checkDataDir():
-    # r'../data/temp' directory is used to temporary storage of
-    # to-be-transmitted audio-files.
-    if not os.path.exists("../data/"):
-        os.makedirs("../data/")
-    if not os.path.exists("../data/self"):
-        os.makedirs("../data/self")
-    if not os.path.exists("../data/self/log"):
-        os.makedirs("../data/self/log")
-    if not os.path.exists("../data/target"):
-        os.makedirs("../data/target")
-    if not os.path.exists("../data/target/log"):
-        os.makedirs("../data/target/log")
+def config():
+    configParser = ConfigParser.RawConfigParser()
+    srcDir = os.path.dirname(os.path.abspath(__file__))
+    srcParentDir = os.path.dirname(srcDir)
+    configFilePath = '{}/config.txt'.format(srcParentDir)
+    configParser.read(configFilePath)
+    messenger = configParser.get('System', 'MESSENGER')
+    pitch = int(configParser.get('Modulator', 'PITCH'))
+    return messenger, pitch, srcDir
 
 
 def loadNull(who):
