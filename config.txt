@@ -1,0 +1,7 @@
+[System]
+
+# Enter the absolute path to the messenger of your choice.
+MESSENGER = /usr/bin/skype
+
+[Modulator]
+PITCH = -800
